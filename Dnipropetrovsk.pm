@@ -11,7 +11,7 @@ use Moo;
 use namespace::clean;
 
 # Version.
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 # Get XML.
 has xml => (
@@ -38,9 +38,11 @@ Map::Tube::Dnipropetrovsk - Interface to the Dnipropetrovsk Metro Map.
  use Map::Tube::Dnipropetrovsk;
  my $obj = Map::Tube::Dnipropetrovsk->new;
  my $routes_ar = $obj->get_all_routes($from, $to);
+ my $lines_ar = $obj->get_lines;
  my $station = $obj->get_node_by_id($station_id);
  my $station = $obj->get_node_by_name($station_name);
  my $route = $obj->get_shortest_route($from, $to);
+ my $stations_ar = $obj->get_stations($line);
  my $metro_name = $obj->name;
  my $xml_file = $obj->xml;
 
@@ -64,6 +66,11 @@ For more information about Dnipropetrovsk Map, click L<here|https://en.wikipedia
  Get all routes from station to station.
  Returns reference to array with Map::Tube::Route objects.
 
+=item C<get_lines()>
+
+ Get lines in metro map.
+ Returns reference to array with Map::Tube::Line objects.
+
 =item C<get_node_by_id($station_id)>
 
  Get station node by id.
@@ -78,6 +85,11 @@ For more information about Dnipropetrovsk Map, click L<here|https://en.wikipedia
 
  Get shortest route between $from and $to node names. Node names in $from and $to are case insensitive.
  Returns Map::Tube::Route object.
+
+=item C<get_stations($line)>
+
+ Get list of stations for concrete metro line.
+ Returns reference to array with Map::Tube::Node objects.
 
 =item C<name()>
 
@@ -135,6 +147,44 @@ For more information about Dnipropetrovsk Map, click L<here|https://en.wikipedia
  # Output like:
  # XML file: .*/dnipropetrovsk-map.xml
 
+=head1 EXAMPLE3
+
+ # Pragmas.
+ use strict;
+ use warnings;
+
+ # Modules.
+ use Map::Tube::GraphViz;
+ use Map::Tube::GraphViz::Utils qw(node_color_without_label);
+ use Map::Tube::Dnipropetrovsk;
+
+ # Object.
+ my $obj = Map::Tube::Dnipropetrovsk->new;
+
+ # GraphViz object.
+ my $g = Map::Tube::GraphViz->new(
+         'callback_node' => \&node_color_without_label,
+         'driver' => 'neato',
+         'tube' => $obj,
+ );
+
+ # Get graph to file.
+ $g->graph('Dnipropetrovsk.png');
+
+ # Print file.
+ system "ls -l Dnipropetrovsk.png";
+
+ # Output like:
+ # -rw-r--r-- 1 skim skim 16544 Jan  1 11:17 Dnipropetrovsk.png
+
+=begin html
+
+<a href="https://raw.githubusercontent.com/tupinek/Map-Tube-Dnipropetrovsk/master/images/ex3.png">
+  <img src="https://raw.githubusercontent.com/tupinek/Map-Tube-Dnipropetrovsk/master/images/ex3.png" alt="Pražské metro" width="300px" height="300px" />
+</a>
+
+=end html
+
 =head1 DEPENDENCIES
 
 L<File::Share>,
@@ -145,21 +195,33 @@ L<namespace::clean>.
 =head1 SEE ALSO
 
 L<Map::Tube>,
+L<Map::Tube::GraphViz>,
+L<Map::Tube::Text::Table>,
+L<Task::Map::Tube>.
+
 L<Map::Tube::Barcelona>,
 L<Map::Tube::Berlin>,
+L<Map::Tube::Bucharest>,
+L<Map::Tube::Budapest>,
 L<Map::Tube::Delhi>,
+L<Map::Tube::Kazan>,
 L<Map::Tube::Kharkiv>,
 L<Map::Tube::Kiev>,
 L<Map::Tube::London>,
 L<Map::Tube::Minsk>,
 L<Map::Tube::Moscow>,
 L<Map::Tube::NYC>,
+L<Map::Tube::Nanjing>,
+L<Map::Tube::Novosibirsk>,
+L<Map::Tube::Prague>,
 L<Map::Tube::SaintPetersburg>,
 L<Map::Tube::Samara>,
 L<Map::Tube::Sofia>,
 L<Map::Tube::Tbilisi>,
 L<Map::Tube::Tokyo>,
-L<Map::Tube::Warsaw>.
+L<Map::Tube::Vienna>,
+L<Map::Tube::Warsaw>,
+L<Map::Tube::Yekaterinburg>.
 
 =head1 REPOSITORY
 
@@ -173,12 +235,12 @@ L<http://skim.cz>
 
 =head1 LICENSE AND COPYRIGHT
 
- © 2014 Michal Špaček
+ © 2014-2015 Michal Špaček
  Artistic License
  BSD 2-Clause License
 
 =head1 VERSION
 
-0.01
+0.02
 
 =cut
